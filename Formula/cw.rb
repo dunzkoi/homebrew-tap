@@ -6,8 +6,8 @@ class Cw < Formula
   license "MIT"
   head "https://github.com/dunzkoi/cw.git", branch: "main"
 
-  depends_on "git"
-  depends_on "bash"
+  # 의존성 안 걸어둠 — cw는 bash 3.2 호환 스크립트, 시스템 git/bash로 동작
+  # 환경에 git이 없는 경우에만 사용자가 직접 설치
 
   def install
     bin.install "cw"
