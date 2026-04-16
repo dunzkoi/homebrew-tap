@@ -1,8 +1,8 @@
 class Cw < Formula
   desc "Claude Worktree — git worktree + claude -w 통합 CLI"
   homepage "https://github.com/dunzkoi/cw"
-  url "https://github.com/dunzkoi/cw/archive/refs/tags/v0.1.1.tar.gz"
-  sha256 "7464b7c6ea764cfb394610f26a164f9b9efe46d445836711dfeecd292c231290"
+  url "https://github.com/dunzkoi/cw/archive/refs/tags/v0.1.2.tar.gz"
+  sha256 "3f4a3c1d46a68ecb47081a4b6d00c027ccc35ce547ddaa455604a51b56b1e089"
   license "MIT"
   head "https://github.com/dunzkoi/cw.git", branch: "main"
 
