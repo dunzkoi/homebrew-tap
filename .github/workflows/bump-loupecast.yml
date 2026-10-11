@@ -1,0 +1,59 @@
+name: bump-loupecast
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Update cask to latest release
+        id: update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cask=Casks/loupecast.rb
+          tag=$(gh release view -R dunzkoi/loupecast --json tagName -q .tagName)
+          version=${tag#v}
+          if ! [[ "$version" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+            echo "unexpected tag: $tag" >&2
+            exit 1
+          fi
+          current=$(sed -n 's/^  version "\(.*\)"$/\1/p' "$cask")
+          if [ "$version" = "$current" ]; then
+            echo "loupecast $current is up to date"
+            exit 0
+          fi
+          sha=$(gh release download "$tag" -R dunzkoi/loupecast -p SHA256SUMS.txt -O - \
+            | awk -v f="Loupecast-$tag.zip" '{ sub(/^\.\//, "", $2) } $2 == f { print $1 }')
+          if ! [[ "$sha" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "no sha256 for Loupecast-$tag.zip in SHA256SUMS.txt" >&2
+            exit 1
+          fi
+          sed -i.bak -e "s/^  version \".*\"$/  version \"$version\"/" \
+            -e "s/^  sha256 \".*\"$/  sha256 \"$sha\"/" "$cask"
+          rm "$cask.bak"
+          grep -qx "  version \"$version\"" "$cask"
+          grep -qx "  sha256 \"$sha\"" "$cask"
+          echo "loupecast $current -> $version"
+          echo "tag=$tag" >> "${GITHUB_OUTPUT:-/dev/null}"
+
+      - name: Commit and push
+        if: steps.update.outputs.tag != ''
+        env:
+          TAG: ${{ steps.update.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: bump loupecast to $TAG"
+          git push
