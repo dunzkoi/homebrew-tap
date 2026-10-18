@@ -1,6 +1,6 @@
 cask "loupecast" do
-  version "0.9.0"
-  sha256 "55920a26d12d348a5d8dbf7738edcb75e2f850eaab446a193f97d5067c454c12"
+  version "0.10.0"
+  sha256 "04187433991760bf30a3040763d5df38452b71093c62d1005b19b63a2c99aebc"
 
   url "https://github.com/dunzkoi/loupecast/releases/download/v#{version}/Loupecast-v#{version}.zip"
   name "Loupecast"
